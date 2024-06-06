@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Order {
+  id           Int        @id @default(autoincrement())
+  cart         CartItem[] // Change the type to represent the items in the cart
+  total        String // Keep it as string if it's always in a specific format, else change to appropriate data type
+  status       String
+  observations String?
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String
+  photo       String
+  size        Int
+  serving     Int
+  price       Float
+  stock       Int
+  category    Category   @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  CartItem    CartItem[]
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  label    String
+  products Product[] // Change the field name to plural for clarity
+}
+
+// New model to represent each item in the cart with the quantity
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int // Add quantity field to represent the quantity of each product in the cart
+  Order     Order?  @relation(fields: [orderId], references: [id])
+  orderId   Int?
+}
