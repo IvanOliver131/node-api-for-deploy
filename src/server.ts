@@ -176,6 +176,36 @@ app.delete('/categories/:id', async (request, reply) => {
   }
 });
 
+// Deletar pedido por ID
+app.delete('/orders/:id', async (request, reply) => {
+  const { id } = request.params as { id: string };
+  try {
+    await prisma.order.delete({
+      where: { id: Number(id) },
+    });
+    return reply.status(204).send();
+  } catch (error) {
+    console.error('Failed to delete order:', error);
+    return reply.status(500).send('Failed to delete order');
+  }
+});
+
+// Editar produto por ID
+app.put<{ Params: { id: string }, Body: Product }>('/products/:id', async (request, reply) => {
+  const { id } = request.params as { id: string };
+  const productData = request.body;
+  try {
+    const updatedProduct = await prisma.product.update({
+      where: { id: Number(id) },
+      data: productData,
+    });
+    return reply.send(updatedProduct);
+  } catch (error) {
+    console.error('Failed to update product:', error);
+    return reply.status(500).send('Failed to update product');
+  }
+});
+
 app.listen({
   host: '0.0.0.0',
   port: process.env.PORT ? Number(process.env.PORT) : 3333,
