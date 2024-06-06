@@ -1,8 +1,14 @@
 import { Order, Category, Product, CartItem, PrismaClient } from "@prisma/client";
 import fastify from "fastify";
+import cors from '@fastify/cors'
 
 const app = fastify();
 const prisma = new PrismaClient();
+
+
+app.register(cors, {
+  origin: true
+})
 
 // Listar todos os pedidos
 app.get('/orders', async (request, reply) => {
